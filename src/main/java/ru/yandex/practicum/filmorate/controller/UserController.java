@@ -22,7 +22,7 @@ import java.util.Map;
  */
 @RestController
 @Validated
-@RequestMapping("/user")
+@RequestMapping("/users")
 @Slf4j
 public class UserController {
     /**

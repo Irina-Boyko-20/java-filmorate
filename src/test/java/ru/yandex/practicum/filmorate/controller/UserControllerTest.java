@@ -81,7 +81,7 @@ public class UserControllerTest {
                 "\"name\": \"NameUser\", " +
                 "\"birthday\": \"2000-02-02\"" +
                 "}";
-        mockMvc.perform(post("/user")
+        mockMvc.perform(post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(userJson))
                 .andExpect(status().isBadRequest())
@@ -100,7 +100,7 @@ public class UserControllerTest {
                 "\"name\": \"NameUser\", " +
                 "\"birthday\": \"2026-02-02\"" +
                 "}";
-        mockMvc.perform(post("/user")
+        mockMvc.perform(post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(userJson))
                 .andExpect(status().isBadRequest())
@@ -119,7 +119,7 @@ public class UserControllerTest {
                 "\"name\": \"NameUser\", " +
                 "\"birthday\": \"2000-02-02\"" +
                 "}";
-        mockMvc.perform(post("/user")
+        mockMvc.perform(post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(userJson))
                 .andExpect(status().isBadRequest())

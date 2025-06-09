@@ -81,7 +81,7 @@ public class FilmControllerTest {
                 "\"releaseDate\": \"2020-02-02\", " +
                 "\"duration\": 100" +
                 "}";
-        mockMvc.perform(post("/film")
+        mockMvc.perform(post("/films")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(filmJson))
                 .andExpect(status().isBadRequest())
@@ -100,7 +100,7 @@ public class FilmControllerTest {
                 "\"releaseDate\": \"1800-02-02\", " +
                 "\"duration\": 100" +
                 "}";
-        mockMvc.perform(post("/film")
+        mockMvc.perform(post("/films")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(filmJson))
                 .andExpect(status().isBadRequest())
@@ -119,7 +119,7 @@ public class FilmControllerTest {
                 "\"releaseDate\": \"2014-02-02\", " +
                 "\"duration\": -10" +
                 "}";
-        mockMvc.perform(post("/film")
+        mockMvc.perform(post("/films")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(filmJson))
                 .andExpect(status().isBadRequest())

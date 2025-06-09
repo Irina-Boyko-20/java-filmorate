@@ -29,7 +29,7 @@ import java.util.Map;
  */
 @RestController
 @Validated
-@RequestMapping("/film")
+@RequestMapping("/films")
 @Slf4j
 public class FilmController {
     /** Создание HashMap для сохранения информации о фильмах. */
