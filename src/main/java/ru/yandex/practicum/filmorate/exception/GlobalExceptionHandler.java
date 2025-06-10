@@ -100,7 +100,7 @@ public class GlobalExceptionHandler extends RuntimeException {
      * @return ResponseEntity с информацией об ошибках и статусом 400
      */
     @ExceptionHandler(ValidationException.class)
-    public ResponseEntity<Map<String, Object>> handleValidationException(
+    public ResponseEntity<Map<String, Object>> exception(
             final ValidationException ex) {
         Map<String, Object> body = new HashMap<>();
         body.put("timestamp", LocalDateTime.now());

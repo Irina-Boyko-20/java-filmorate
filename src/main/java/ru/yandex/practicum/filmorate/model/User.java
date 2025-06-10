@@ -3,8 +3,10 @@ package ru.yandex.practicum.filmorate.model;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.NotBlank;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Data;
+import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
 
@@ -13,29 +15,30 @@ import java.time.LocalDate;
  */
 @Data
 @Builder
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class User {
     /**
      * Идентификатор пользователя.
      */
-    private Long id;
+    Long id;
     /**
      * Электронная почта пользователя.
      */
     @NotBlank(message = "Электронная почта не указана")
     @Email(message = "Некорректный формат электронной почты")
-    private String email;
+    String email;
     /**
      * Логин пользователя.
      */
     @NotBlank(message = "Логин не указан")
-    private String login;
+    String login;
     /**
      * Имя для отображения.
      */
-    private String name;
+    String name;
     /**
      * Дата рождения.
      */
     @PastOrPresent(message = "Дата рождения не может быть в будущем")
-    private LocalDate birthday;
+    LocalDate birthday;
 }
