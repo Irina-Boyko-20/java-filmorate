@@ -157,7 +157,7 @@ public class UserService {
         }
 
         return getFriends(id).stream()
-                .filter(f -> getFriends(otherId).contains(f))
+                .filter(friend -> getFriends(otherId).contains(friend))
                 .toList();
     }
 
