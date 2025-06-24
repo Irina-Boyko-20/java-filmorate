@@ -28,6 +28,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
+import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
 
 @Disabled
 @SpringBootTest
@@ -36,8 +37,6 @@ public class FilmControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    private InMemoryFilmStorage filmStorage;
-    private FilmService service;
     private FilmController controller;
     private Film film;
     private Film film1;
@@ -45,8 +44,9 @@ public class FilmControllerTest {
 
     @BeforeEach
     public void beforeEach() {
-        filmStorage = new InMemoryFilmStorage();
-        service = new FilmService(filmStorage);
+        InMemoryFilmStorage filmStorage = new InMemoryFilmStorage();
+        InMemoryUserStorage userStorage = new InMemoryUserStorage();
+        FilmService service = new FilmService(filmStorage, userStorage);
         controller = new FilmController(service);
         film = Film.builder()
                 .name("Name")
