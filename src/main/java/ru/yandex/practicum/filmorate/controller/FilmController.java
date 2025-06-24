@@ -79,10 +79,9 @@ public class FilmController {
      */
     @PutMapping({"/{id}/like/{userId}"})
     @ResponseStatus(HttpStatus.OK)
-    public String like(@PathVariable Long id, @PathVariable Long userId) {
+    public void like(@PathVariable Long id, @PathVariable Long userId) {
         filmService.like(id, userId);
         log.debug("Пользователь id = {} лайкнул фильм id = {}", userId, id);
-        return String.format("Пользователь id = %d лайкнул фильм id = %d", userId, id);
     }
 
     /**
@@ -94,10 +93,9 @@ public class FilmController {
      */
     @DeleteMapping({"/{id}/like/{userId}"})
     @ResponseStatus(HttpStatus.OK)
-    public String disLike(@PathVariable Long id, @PathVariable Long userId) {
+    public void disLike(@PathVariable Long id, @PathVariable Long userId) {
         filmService.disLike(id, userId);
         log.debug("Пользователь id = {} дизлайкнул фильм id = {}", userId, id);
-        return String.format("Пользователь id = %d дизлайкнул фильм id = %d", userId, id);
     }
 
     /**

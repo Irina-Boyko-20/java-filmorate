@@ -5,7 +5,9 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.ConditionsNotMetException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
+import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
 
 import java.util.Set;
 import java.util.HashSet;
@@ -30,6 +32,7 @@ import java.util.Objects;
 public class FilmService {
     private final Map<Long, Set<Long>> likesByFilm = new HashMap<>();
     private final InMemoryFilmStorage filmStorage;
+    private final InMemoryUserStorage userStorage;
 
     /**
      * Возвращает коллекцию всех фильмов.
@@ -73,6 +76,11 @@ public class FilmService {
             throw new NotFoundException(String.format("Фильм id = %d не найден", filmId));
         }
 
+        User userVerification = userStorage.findById(userId);
+        if (userVerification == null) {
+            throw new NotFoundException(String.format("Пользователь id = %d не найден", userId));
+        }
+
         Set<Long> likes = likesByFilm.computeIfAbsent(filmId, k -> new HashSet<>());
 
         if (likes.contains(userId)) {
@@ -97,6 +105,15 @@ public class FilmService {
      * @param userId идентификатор пользователя, удаляющего лайк
      */
     public void disLike(Long filmId, Long userId) {
+        if (filmStorage.findById(filmId).isEmpty()) {
+            throw new NotFoundException(String.format("Фильм id = %d не найден", filmId));
+        }
+
+        User userVerification = userStorage.findById(userId);
+        if (userVerification == null) {
+            throw new NotFoundException(String.format("Пользователь id = %d не найден", userId));
+        }
+
         Set<Long> likes = likesByFilm.get(filmId);
         if (likes != null && likes.remove(userId)) {
             if (likes.isEmpty()) {
