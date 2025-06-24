@@ -25,6 +25,8 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import ru.yandex.practicum.filmorate.service.UserService;
+import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -32,6 +34,8 @@ public class UserControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
+    private InMemoryUserStorage storage;
+    private UserService service;
     private UserController controller;
     private User user;
     private User user1;
@@ -39,7 +43,9 @@ public class UserControllerTest {
 
     @BeforeEach
     public void beforeEach() {
-        controller = new UserController();
+        storage = new InMemoryUserStorage();
+        service = new UserService(storage);
+        controller = new UserController(service);
         user = User.builder()
                 .email("email@mail.ru")
                 .login("Login")
@@ -150,7 +156,7 @@ public class UserControllerTest {
         final NotFoundException exception = assertThrows(
                 NotFoundException.class,
                 () -> controller.update(user2));
-        assertEquals("Пользователь с id=555 не найден", exception.getMessage());
+        assertEquals("Пользователь id=555 не найден", exception.getMessage());
 
         Map<Long, User> users = controller.findAll().stream()
                 .collect(Collectors.toMap(User::getId, Function.identity()));

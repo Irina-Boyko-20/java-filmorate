@@ -9,6 +9,8 @@ import lombok.Data;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Модель пользователя с валидацией.
@@ -41,4 +43,22 @@ public class User {
      */
     @PastOrPresent(message = "Дата рождения не может быть в будущем")
     LocalDate birthday;
+
+    /**
+     * Множество идентификаторов друзей пользователя.
+     */
+    @Builder.Default
+    Set<Long> friends = new HashSet<>();
+
+    /**
+     * Добавляет идентификатор друга в множество друзей пользователя.
+     *
+     * @param friendId идентификатор пользователя, который добавляется в друзья
+     */
+    public void addFriend(Long friendId) {
+        if (friends == null) {
+            friends = new HashSet<>();
+        }
+        friends.add(friendId);
+    }
 }

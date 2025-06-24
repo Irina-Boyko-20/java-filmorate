@@ -27,9 +27,12 @@ import java.util.stream.Collectors;
 @Slf4j
 public class GlobalExceptionHandler extends RuntimeException {
     /**
-     * Константа для статуса HTTP 404 (Bad Request).
+     * Константы для статусов HTTP 404 (Bad BAD_REQUEST),
+     * 400 (NOT_FOUND), 500 (SERVER_ERROR).
      */
-    private static final int HTTP_STATUS_BAD_REQUEST = 404;
+    private static final int HTTP_STATUS_BAD_REQUEST = 400;
+    private static final int HTTP_STATUS_NOT_FOUND = 404;
+    private static final int HTTP_STATUS_INTERNAL_SERVER_ERROR = 500;
 
     /**
      * Обрабатывает исключения, возникающие при неправильных аргументах метода.
@@ -67,7 +70,7 @@ public class GlobalExceptionHandler extends RuntimeException {
             final NotFoundException ex) {
         Map<String, Object> body = new HashMap<>();
         body.put("timestamp", LocalDateTime.now());
-        body.put("status", HttpStatus.NOT_FOUND.value());
+        body.put("status", HTTP_STATUS_NOT_FOUND);
         body.put("error", ex.getMessage());
 
         log.warn(ex.getMessage());
@@ -78,18 +81,18 @@ public class GlobalExceptionHandler extends RuntimeException {
      * Обрабатывает исключения условий, которые не были выполнены.
      *
      * @param ex исключение ConditionsNotMetException
-     * @return ResponseEntity с информацией об ошибке и статусом 404
+     * @return ResponseEntity с информацией об ошибке и статусом 400
      */
     @ExceptionHandler(ConditionsNotMetException.class)
     public ResponseEntity<Map<String, Object>> handleConditionsNotMetException(
             final ConditionsNotMetException ex) {
         Map<String, Object> body = new HashMap<>();
         body.put("timestamp", LocalDateTime.now());
-        body.put("status", HttpStatus.NOT_FOUND.value());
+        body.put("status", HTTP_STATUS_BAD_REQUEST);
         body.put("error", ex.getMessage());
 
         log.warn(ex.getMessage());
-        return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
     }
 
     /**
@@ -104,7 +107,7 @@ public class GlobalExceptionHandler extends RuntimeException {
             final ValidationException ex) {
         Map<String, Object> body = new HashMap<>();
         body.put("timestamp", LocalDateTime.now());
-        body.put("status", HttpStatus.BAD_REQUEST.value());
+        body.put("status", HTTP_STATUS_BAD_REQUEST);
         body.put("errorMessages", ex.getErrors());
 
         return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
