@@ -1,21 +1,16 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.PutMapping;
-import ru.yandex.practicum.filmorate.exception.ConditionsNotMetException;
-import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.UserService;
 
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 /**
  * Контроллер для управления пользователями.
@@ -24,11 +19,9 @@ import java.util.Map;
 @Validated
 @RequestMapping("/users")
 @Slf4j
+@RequiredArgsConstructor
 public class UserController {
-    /**
-     * Хранение пользователей в памяти.
-     */
-    private final Map<Long, User> users = new HashMap<>();
+    private final UserService userService;
 
     /**
      * Получение всех пользователей.
@@ -36,8 +29,9 @@ public class UserController {
      * @return коллекция всех пользователей
      */
     @GetMapping
+    @ResponseStatus(HttpStatus.OK)
     public Collection<User> findAll() {
-        return users.values();
+        return userService.findAll();
     }
 
     /**
@@ -47,27 +41,10 @@ public class UserController {
      * @return добавленный пользователь с присвоенным id
      */
     @PostMapping
+    @ResponseStatus(HttpStatus.OK)
     public User add(@Valid @RequestBody final User user) {
-        checkName(user);
-
-        user.setId(getNextId());
-        users.put(user.getId(), user);
-        log.info("Пользователь с id = {} успешно добавлен", user.getId());
-        return user;
-    }
-
-    /**
-     * Генерация следующего уникального id.
-     *
-     * @return следующий id
-     */
-    private long getNextId() {
-        long currentMaxId = users.keySet()
-                .stream()
-                .mapToLong(id -> id)
-                .max()
-                .orElse(0);
-        return ++currentMaxId;
+        log.debug("Добавлен новый пользователь: {}", user);
+        return userService.add(user);
     }
 
     /**
@@ -77,35 +54,67 @@ public class UserController {
      * @return обновленный пользователь
      */
     @PutMapping
+    @ResponseStatus(HttpStatus.OK)
     public User update(@Valid @RequestBody final User newUser) {
-        if (newUser.getId() == null) {
-            throw new ConditionsNotMetException("Не указан id пользователя");
-        }
-
-        checkName(newUser);
-
-        if (users.containsKey(newUser.getId())) {
-            User oldUser = users.get(newUser.getId());
-            oldUser.setEmail(newUser.getEmail());
-            oldUser.setLogin(newUser.getLogin());
-            oldUser.setName(newUser.getName());
-            oldUser.setBirthday(newUser.getBirthday());
-            log.info("пользователь с id={} успешно обновлён", newUser.getId());
-            return oldUser;
-        }
-        throw new NotFoundException(
-                String.format("Пользователь с id=%d не найден", newUser.getId())
-        );
+        log.debug("Обновлен пользователь: {}", newUser);
+        return userService.update(newUser);
     }
 
     /**
-     * Проверка и установка имени пользователя, если оно отсутствует.
+     * Добавляет пользователя с идентификатором {@code friendId}
+     * в список друзей пользователя с идентификатором {@code id}.
      *
-     * @param user пользователь для проверки
+     * @param id идентификатор пользователя, которому добавляют друга
+     * @param friendId идентификатор пользователя, который добавляется в друзья
+     * @return обновлённый список друзей пользователя с {@code id}
      */
-    public void checkName(@RequestBody final User user) {
-        if (user.getName() == null || user.getName().isBlank()) {
-            user.setName(user.getLogin());
-        }
+    @PutMapping({"/{id}/friends/{friendId}"})
+    @ResponseStatus(HttpStatus.OK)
+    public List<User> addFriend(@PathVariable final Long id, @PathVariable final Long friendId) {
+        log.debug("Пользователь c id = {} добавил в друзья пользователя с id = {}", id, friendId);
+        return userService.addFriend(id, friendId);
+    }
+
+    /**
+     * Удаляет пользователя с идентификатором {@code friendId}
+     * из списка друзей пользователя с идентификатором {@code id}.
+     *
+     * @param id идентификатор пользователя, у которого удаляют друга
+     * @param friendId идентификатор пользователя, который удаляется из друзей
+     * @return {@code true}, если удаление прошло успешно, иначе {@code false}
+     */
+    @DeleteMapping({"/{id}/friends/{friendId}"})
+    @ResponseStatus(HttpStatus.OK)
+    public boolean deleteFriend(@PathVariable final Long id, @PathVariable final Long friendId) {
+        log.debug("Пользователь c id = {} удалил из друзей пользователя с id = {}", id, friendId);
+        return userService.deleteFriend(id, friendId);
+    }
+
+    /**
+     * Получает список друзей пользователя с идентификатором {@code id}.
+     *
+     * @param id идентификатор пользователя
+     * @return список друзей пользователя
+     */
+    @GetMapping({"/{id}/friends"})
+    @ResponseStatus(HttpStatus.OK)
+    public List<User> getFriends(@PathVariable final Long id) {
+        log.debug("Получен список пользователей, являющимися друзьями пользователя с id = {}", id);
+        return userService.getFriends(id);
+    }
+
+    /**
+     * Получает список общих друзей (пересечение списков друзей)
+     * пользователей с идентификаторами {@code id} и {@code otherId}.
+     *
+     * @param id идентификатор первого пользователя
+     * @param otherId идентификатор второго пользователя
+     * @return список общих друзей двух пользователей
+     */
+    @GetMapping({"/{id}/friends/common/{otherId}"})
+    @ResponseStatus(HttpStatus.OK)
+    public List<User> mutualFriends(@PathVariable final Long id, @PathVariable final Long otherId) {
+        log.debug("Получен список друзей пользователя с id = {}, общих с пользователем с id = {}", id, otherId);
+        return userService.mutualFriends(id, otherId);
     }
 }
