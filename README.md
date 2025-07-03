@@ -2,7 +2,7 @@
 
 # Модель базы данных (ER-diagram)
 
-![My First Board (1)](https://github.com/user-attachments/assets/4928a974-7d7e-47fe-9f7f-6975b002fa6f)
+![My First Board (3)](https://github.com/user-attachments/assets/50463511-131e-433a-9a3d-1269d79d34b9)
 
 
 ## Таблицы и поля
