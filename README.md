@@ -2,7 +2,8 @@
 
 # Модель базы данных (ER-diagram)
 
-![My First Board](https://github.com/user-attachments/assets/4807e30f-3be2-4670-8141-17be36f410cf)
+![My First Board (1)](https://github.com/user-attachments/assets/4928a974-7d7e-47fe-9f7f-6975b002fa6f)
+
 
 ## Таблицы и поля
 
@@ -81,3 +82,4 @@ LEFT OUTER JOIN likes AS l ON f.film_id = l.film_id
 GROUP BY f.film_id
 ORDER BY count_likes DESC
 LIMIT 5;
+```
